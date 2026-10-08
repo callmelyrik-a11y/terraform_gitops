@@ -1,0 +1,37 @@
+name: Terraform Plan
+
+on:
+  pull_request:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::513329232596:role/GitHubActions-Terraform-Role
+          aws-region: ap-northeast-2
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan

@@ -50,6 +50,7 @@ resource "aws_rds_cluster_instance" "MyDB1" {
   depends_on                 = [aws_rds_cluster.MyDBCluster]
   identifier                 = "mydb-1"
   cluster_identifier         = aws_rds_cluster.MyDBCluster.id
+  instance_class             = "db.t3.medium"
   engine                     = "aurora-mysql"
   engine_version             = "8.0.mysql_aurora.3.10.3"
   availability_zone          = "ap-northeast-2a"
@@ -61,6 +62,7 @@ resource "aws_rds_cluster_instance" "MyDB2" {
   depends_on                 = [aws_rds_cluster_instance.MyDB1]
   identifier                 = "mydb-2"
   cluster_identifier         = aws_rds_cluster.MyDBCluster.id
+  instance_class             = "db.t3.medium"
   engine                     = "aurora-mysql"
   engine_version             = "8.0.mysql_aurora.3.10.3"
   availability_zone          = "ap-northeast-2c"

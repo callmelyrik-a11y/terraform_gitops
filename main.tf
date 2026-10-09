@@ -4,11 +4,16 @@ provider "aws" {
 
 resource "aws_key_pair" "tf_keypair" {
   key_name   = "tf_keypair"
-  public_key = file("C:\\sshkey\\tf_keypair.pub")
+  public_key = var.public_key
 
   tags = {
     Name = "tf_keypair"
   }
+}
+
+variable "public_key" {
+  description = "SSH public key for EC2 access"
+  type        = string
 }
 
 data "aws_ami" "LatestAmi" {

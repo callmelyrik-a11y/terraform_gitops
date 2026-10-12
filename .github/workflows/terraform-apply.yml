@@ -1,0 +1,94 @@
+name: Terraform CD
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: terraform-production
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: Create Terraform Plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    env:
+      TF_VAR_public_key: ${{ vars.TF_PUBLIC_KEY }}
+      TF_VAR_db_master_password: ${{ secrets.TF_VAR_db_master_password }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::513329232596:role/GitHubActions-Terraform-Role
+          aws-region: ap-northeast-2
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Show Plan Summary
+        run: terraform show -no-color tfplan
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-plan
+          path: tfplan
+          retention-days: 1
+
+  apply:
+    name: Apply Approved Plan
+    needs: plan
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    environment: production
+
+    env:
+      TF_VAR_public_key: ${{ vars.TF_PUBLIC_KEY }}
+      TF_VAR_db_master_password: ${{ secrets.TF_VAR_DB_MASTER_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: arn:aws:iam::513329232596:role/GitHubActions-Terraform-Role
+          aws-region: ap-northeast-2
+
+      - name: Terraform Init
+        run: terraform init -input=false
+
+      - name: Download Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-plan
+          path: .
+
+      - name: Terraform Apply
+        run: terraform apply -input=false -auto-approve tfplan

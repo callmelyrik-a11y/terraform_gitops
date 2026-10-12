@@ -10,6 +10,10 @@ permissions:
   id-token: write
   contents: read
 
+concurrency:
+  group: terraform-aws-lab-state
+  cancel-in-progress: false
+
 jobs:
   terraform-plan:
     runs-on: ubuntu-latest

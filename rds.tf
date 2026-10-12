@@ -21,6 +21,12 @@ resource "aws_security_group" "MyDBSecugroup" {
   }
 }
 
+variable "db_master_password" {
+  description = "Aurora master password"
+  type        = string
+  sensitive   = true
+}
+
 resource "aws_db_subnet_group" "MyDBSubnetGroup" {
   name        = "mydbsubnetgroup"
   subnet_ids  = [aws_subnet.MyPrivate1Subnet.id, aws_subnet.MyPrivate2Subnet.id]
@@ -40,7 +46,7 @@ resource "aws_rds_cluster" "MyDBCluster" {
   availability_zones     = ["ap-northeast-2a", "ap-northeast-2c", ]
   database_name          = "testdb"
   master_username        = "dbadmin"
-  master_password        = "toor1234."
+  master_password        = var.db_master_password"
   skip_final_snapshot    = true
   db_subnet_group_name   = aws_db_subnet_group.MyDBSubnetGroup.id
   vpc_security_group_ids = [aws_security_group.MyDBSecugroup.id]

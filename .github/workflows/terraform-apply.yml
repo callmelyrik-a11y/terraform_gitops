@@ -66,7 +66,7 @@ jobs:
 
     env:
       TF_VAR_public_key: ${{ vars.TF_PUBLIC_KEY }}
-      TF_VAR_db_master_password: ${{ secrets.TF_VAR_db_master_password }}
+      TF_VAR_db_master_password: ${{ secrets.TF_VAR_DB_MASTER_PASSWORD }}
 
     steps:
       - name: Checkout

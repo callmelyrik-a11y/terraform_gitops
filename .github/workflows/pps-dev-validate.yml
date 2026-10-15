@@ -1,0 +1,29 @@
+name: PPS Dev Terraform Static Validation
+
+on:
+  pull_request:
+    paths:
+      - "environments/pps-dev/**"
+      - ".github/workflows/pps-dev-validate.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-validate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: environments/pps-dev
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.10.5"
+      - name: Init without touching remote state
+        run: terraform init -backend=false -input=false
+      - name: Format
+        run: terraform fmt -check -recursive
+      - name: Validate
+        run: terraform validate

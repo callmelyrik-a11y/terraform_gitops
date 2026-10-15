@@ -69,9 +69,9 @@ resource "aws_cloudwatch_dashboard" "main" {
         width  = 12
         height = 6
         properties = {
-          title   = "Aurora CPU (Writer / Reader)"
-          region  = var.region
-          period  = 300
+          title  = "Aurora CPU (Writer / Reader)"
+          region = var.region
+          period = 300
           metrics = [
             ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", aws_rds_cluster_instance.writer.identifier],
             ["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", aws_rds_cluster_instance.reader.identifier]
@@ -85,9 +85,9 @@ resource "aws_cloudwatch_dashboard" "main" {
         width  = 12
         height = 6
         properties = {
-          title   = "Aurora Connections"
-          region  = var.region
-          period  = 300
+          title  = "Aurora Connections"
+          region = var.region
+          period = 300
           metrics = [
             ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", aws_rds_cluster_instance.writer.identifier],
             ["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", aws_rds_cluster_instance.reader.identifier]
